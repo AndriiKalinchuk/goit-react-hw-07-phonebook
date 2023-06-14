@@ -1,39 +1,73 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-axios.defaults.baseURL = 'https://6489b7b15fa58521cab01f9e.mockapi.io';
+import { toast } from 'react-toastify';
+import { toastifyOptions } from 'utils/toastifyOptions';
+
+import * as api from '../utils/api-contacts';
 
 export const fetchContacts = createAsyncThunk(
-  '/contacts/fetchAll',
+  'contacts/fetchAll',
   async (_, thunkAPI) => {
     try {
-      const { data } = await axios.get('/contacts/fetchAll');
+      const { data } = await api.getAllContacts();
       return data;
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.message);
+    } catch ({ response }) {
+      return thunkAPI.rejectWithValue(
+        `Ooops! Wrong... Try again or update browser`
+      );
     }
   }
 );
 
+const isDublicate = (contacts, { name, phone }) => {
+  const normalizedName = name.toLowerCase().trim();
+  const normalizedNumber = phone.trim();
+
+  const dublicate = contacts.some(
+    contact =>
+      contact.name.toLowerCase().trim() === normalizedName ||
+      contact.phone.trim() === normalizedNumber
+  );
+  return dublicate;
+};
+
 export const addContact = createAsyncThunk(
-  '/contacts/addContact',
-  async (contact, thunkAPI) => {
+  'contacts/addContact',
+  async (data, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post('/contacts/addContact', contact);
-      return data;
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.message);
+      const { data: result } = await api.addContact(data);
+      toast.success('Add contact', {
+        position: 'bottom-right',
+      });
+      return result;
+    } catch ({ response }) {
+      return rejectWithValue(`Ooops! Wrong... Try again or update browser`);
     }
+  },
+  {
+    condition: (data, { getState }) => {
+      const {
+        contacts: { items },
+      } = getState();
+
+      if (isDublicate(items, data)) {
+        toast.error(`This contact is already in contacts`, toastifyOptions);
+        return false;
+      }
+    },
   }
 );
 
 export const deleteContact = createAsyncThunk(
-  '/contacts/deleteContact',
-  async (id, thunkAPI) => {
+  'contacts/deleteContact',
+  async (id, { rejectWithValue }) => {
     try {
-      const { data } = await axios.delete(`/contacts/${id}`);
-      return data;
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.message);
+      await api.deleteContact(id);
+      toast.success('Contact delete', {
+        position: 'bottom-right',
+      });
+      return id;
+    } catch ({ response }) {
+      return rejectWithValue(`Ooops! Wrong... Try again or update browser`);
     }
   }
 );
