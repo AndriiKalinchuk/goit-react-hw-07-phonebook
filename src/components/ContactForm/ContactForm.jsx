@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastifyOptions } from 'utils/toastifyOptions';
 
-import { addContact } from 'Redux/contacts/contactsSlice';
+import { addContact, fetchContacts } from 'Redux/operations';
 import { getContacts } from 'Redux/contacts/contactsSelectors';
 
 import {
@@ -35,12 +35,12 @@ const schema = yup.object().shape({
 const initialValues = { name: '', number: '' };
 
 export const ContactForm = () => {
-  const contacts = useSelector(getContacts);
+  const contacts = useSelector(fetchContacts);
   const dispatch = useDispatch();
   const isDublicate = ({ name, number }) => {
     const normalizedName = name.toLowerCase().trim();
     const normalizedNumber = number.trim();
-    const dublicate = contacts.find(
+    const dublicate = contacts.items.find(
       contact =>
         contact.name.toLowerCase().trim() === normalizedName ||
         contact.number.trim() === normalizedNumber

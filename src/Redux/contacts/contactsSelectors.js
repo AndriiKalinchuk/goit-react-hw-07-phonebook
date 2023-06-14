@@ -2,6 +2,7 @@ import { toast } from 'react-toastify';
 import { toastifyOptions } from 'utils/toastifyOptions';
 
 export const getContacts = store => store.contacts;
+export const selectIsLoading = state => state.contacts.isLoading;
 
 export const getFilteredContacts = store => {
   const { filter, contacts } = store;
