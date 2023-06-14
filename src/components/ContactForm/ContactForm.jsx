@@ -1,14 +1,11 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import 'yup-phone';
 
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { toastifyOptions } from 'utils/toastifyOptions';
 
-import { addContact, fetchContacts } from 'Redux/operations';
-import { getContacts } from 'Redux/contacts/contactsSelectors';
+import { addContact } from 'Redux/operations';
 
 import {
   Form,
@@ -35,27 +32,9 @@ const schema = yup.object().shape({
 const initialValues = { name: '', number: '' };
 
 export const ContactForm = () => {
-  const contacts = useSelector(fetchContacts);
   const dispatch = useDispatch();
-  const isDublicate = ({ name, number }) => {
-    const normalizedName = name.toLowerCase().trim();
-    const normalizedNumber = number.trim();
-    const dublicate = contacts.items.find(
-      contact =>
-        contact.name.toLowerCase().trim() === normalizedName ||
-        contact.number.trim() === normalizedNumber
-    );
-    return Boolean(dublicate);
-  };
-
-  const onAddContact = ({ name, number }) => {
-    if (isDublicate({ name, number })) {
-      return toast.error(
-        `This contact is already in contacts`,
-        toastifyOptions
-      );
-    }
-    dispatch(addContact({ name, number }));
+  const onAddContact = data => {
+    dispatch(addContact(data));
   };
   return (
     <Formik
