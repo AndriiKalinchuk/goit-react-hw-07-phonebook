@@ -11,9 +11,7 @@ export const fetchContacts = createAsyncThunk(
       const { data } = await api.getAllContacts();
       return data;
     } catch ({ response }) {
-      return thunkAPI.rejectWithValue(
-        `Ooops! Wrong... Try again or update browser`
-      );
+      return thunkAPI.rejectWithValue(`Something went wrong`);
     }
   }
 );
@@ -40,7 +38,7 @@ export const addContact = createAsyncThunk(
       });
       return result;
     } catch ({ response }) {
-      return rejectWithValue(`Ooops! Wrong... Try again or update browser`);
+      return rejectWithValue(`Something went wrong`);
     }
   },
   {
@@ -50,7 +48,10 @@ export const addContact = createAsyncThunk(
       } = getState();
 
       if (isDublicate(items, data)) {
-        toast.error(`This contact is already in contacts`, toastifyOptions);
+        toast.error(
+          `Contact already exists in your phonebook`,
+          toastifyOptions
+        );
         return false;
       }
       return true;
@@ -68,7 +69,7 @@ export const deleteContact = createAsyncThunk(
       });
       return id;
     } catch ({ response }) {
-      return rejectWithValue(`Ooops! Wrong... Try again or update browser`);
+      return rejectWithValue(`Something went wrong`);
     }
   }
 );

@@ -39,9 +39,7 @@ export const ContactList = () => {
     <>
       {isLoading && contacts?.length === 0 && <div>Loading...</div>}
       {error && !isLoading && <div>Ooops, error...</div>}
-      {!filteredContacts?.length && !error && !isLoading && (
-        <div>Contacts not found</div>
-      )}
+      {!filteredContacts?.length && !error && !isLoading}
       {!error && !isLoading && filteredContacts?.length > 0 && (
         <List>
           {filteredContacts.map(({ name, number, id }) => {
