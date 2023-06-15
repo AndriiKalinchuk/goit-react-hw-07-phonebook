@@ -18,14 +18,14 @@ export const fetchContacts = createAsyncThunk(
   }
 );
 
-const isDublicate = (contacts, { name, phone }) => {
+const isDublicate = (contacts, { name, number }) => {
   const normalizedName = name.toLowerCase().trim();
-  const normalizedNumber = phone.trim();
+  const normalizedNumber = number.trim();
 
   const dublicate = contacts.some(
     contact =>
       contact.name.toLowerCase().trim() === normalizedName ||
-      contact.phone.trim() === normalizedNumber
+      contact.number.trim() === normalizedNumber
   );
   return dublicate;
 };
@@ -35,7 +35,7 @@ export const addContact = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const { data: result } = await api.addContact(data);
-      toast.success('Add contact', {
+      toast.success('Contact added', {
         position: 'bottom-right',
       });
       return result;
@@ -53,6 +53,7 @@ export const addContact = createAsyncThunk(
         toast.error(`This contact is already in contacts`, toastifyOptions);
         return false;
       }
+      return true;
     },
   }
 );
@@ -62,7 +63,7 @@ export const deleteContact = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       await api.deleteContact(id);
-      toast.success('Contact delete', {
+      toast.success('Contact deleted', {
         position: 'bottom-right',
       });
       return id;
